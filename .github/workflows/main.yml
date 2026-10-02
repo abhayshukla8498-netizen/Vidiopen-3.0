@@ -12,15 +12,23 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Locate and Move Project Files
+      - name: Unzip and Setup Project Structure
         run: |
-          # Agar settings file subfolder me chupi hai to dhoondh kar root par lao
-          SETTINGS_PATH=$(find . -name "settings.gradle*" | head -n 1)
-          if [ -n "$SETTINGS_PATH" ]; then
-            PROJECT_DIR=$(dirname "$SETTINGS_PATH")
-            if [ "$PROJECT_DIR" != "." ]; then
-              echo "Found project files inside: $PROJECT_DIR"
-              cp -r "$PROJECT_DIR"/* .
+          # Agar repo me koi .zip file hai toh use unzip karo
+          ZIP_FILE=$(find . -maxdepth 2 -name "*.zip" | head -n 1)
+          if [ -n "$ZIP_FILE" ]; then
+            echo "Unzipping $ZIP_FILE..."
+            unzip -o "$ZIP_FILE" -d extracted_project
+            cp -rf extracted_project/* .
+          fi
+
+          # Agar files kisi subfolder ke andar hain toh unhe bahar root par lao
+          SETTINGS_FILE=$(find . -name "settings.gradle*" | head -n 1)
+          if [ -n "$SETTINGS_FILE" ]; then
+            TARGET_DIR=$(dirname "$SETTINGS_FILE")
+            if [ "$TARGET_DIR" != "." ]; then
+              echo "Moving files from $TARGET_DIR to root..."
+              cp -rf "$TARGET_DIR"/* .
             fi
           fi
           ls -la
