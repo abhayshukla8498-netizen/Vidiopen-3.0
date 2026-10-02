@@ -42,13 +42,14 @@ jobs:
       - name: Prepare Files and Keystore
         run: |
           mkdir -p app
-          # .env aur .env.example dono ensure karein (Secrets Gradle plugin ke liye)
           test -f .env || echo "GEMINI_API_KEY=dummy_key" > .env
           test -f .env.example || echo "GEMINI_API_KEY=dummy_key" > .env.example
           test -f app/google-services.json || echo '{"project_info":{"project_number":"123","project_id":"vidiopen","storage_bucket":"vidiopen.appspot.com"},"client":[{"client_info":{"mobilesdk_app_id":"1:123:android:abc","android_client_info":{"package_name":"com.vidiopen.videoplayer"}},"api_key":[{"current_key":"dummy"}]}]}' > app/google-services.json
           
           keytool -genkeypair -v -keystore my-upload-key.jks -alias upload -keyalg RSA -keysize 2048 -validity 10000 -storepass android123 -keypass android123 -dname "CN=Abhay,OU=Dev,O=Vidiopen,L=City,S=State,C=IN"
-          gradle wrapper --gradle-version 8.11.1
+          
+          # Exact 9.3.1 version configure karein
+          gradle wrapper --gradle-version 9.3.1
           chmod +x gradlew
 
       - name: Build APK
