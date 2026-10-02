@@ -12,6 +12,19 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      - name: Locate and Move Project Files
+        run: |
+          # Agar settings file subfolder me chupi hai to dhoondh kar root par lao
+          SETTINGS_PATH=$(find . -name "settings.gradle*" | head -n 1)
+          if [ -n "$SETTINGS_PATH" ]; then
+            PROJECT_DIR=$(dirname "$SETTINGS_PATH")
+            if [ "$PROJECT_DIR" != "." ]; then
+              echo "Found project files inside: $PROJECT_DIR"
+              cp -r "$PROJECT_DIR"/* .
+            fi
+          fi
+          ls -la
+
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
